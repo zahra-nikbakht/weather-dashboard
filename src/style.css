@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+
+.loading-BG{
+    background-image: url(/images/default.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.loader-ring {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: rgba(255,255,255,0.9);
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text{
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.55) 0%,
+    rgba(255,255,255,0.95) 35%,
+    rgba(255,255,255,0.55) 70%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 0%;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  animation: textShimmer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textShimmer{
+  from { background-position: 0% 0%; }
+  to   { background-position: 100% 0%; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .loading-text{ animation: none; color: rgba(255,255,255,0.8); background: none; }
+}
+
+

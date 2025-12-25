@@ -1,0 +1,170 @@
+<script setup>
+import { onMounted, computed, ref, watch } from "vue"
+import WeatherCard from "./components/WeatherCard.vue"
+import WeatherDetails from "./components/WeatherDetails.vue"
+import { useWeather } from "./composables/useWeather"
+
+
+// --- WEATHER STORE ---
+const store = useWeather()
+
+const {
+  city,
+  weather,
+  forecast,
+  airQuality,
+  loading,
+  error,
+  searchWeather,
+  hourly,
+  initialLoad,
+  isReady,
+  loadInitialWeather
+} = store
+
+// --- AUTO-LOAD LOCATION ---
+onMounted(() => {
+  loadInitialWeather()
+})
+
+
+
+
+// --- BACKGROUND IMAGE ---
+const backgroundImage = computed(() => {
+  if (!weather.value) return "/images/default.jpg"
+
+  const main = weather.value.weather?.[0]?.main?.toLowerCase() || ""
+
+  if (main.includes("cloud")) return "/images/cloudy.jpg"
+  if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "/images/rain.jpg"
+  if (main.includes("snow")) return "/images/snow.jpg"
+  if (main.includes("clear")) return "/images/clear.jpg"
+  if (main.includes("storm") || main.includes("thunder")) return "/images/storm.jpg"
+
+  return "/images/default.jpg"
+})
+
+const backgroundStyle = computed(() => ({
+  backgroundImage: `url(${backgroundImage.value})`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+}))
+    
+// --- HANDLE SEARCH EVENT ---
+const handleCitySearch = (newCity) => {
+  city.value = newCity
+  searchWeather()  // fetch weather with updated city
+}
+
+
+
+const toast = ref({ show: false, message: "" })
+
+const showToast = (msg) => {
+  toast.value.message = msg
+  toast.value.show = true
+
+  setTimeout(() => {
+    toast.value.show = false
+  }, 4000)
+}
+
+watch(error, (val) => {
+  if (val) showToast(val)
+})
+
+</script>
+
+
+<template>
+
+  <div
+      v-if="initialLoad && !isReady"
+      class="loading-BG min-h-screen w-full fixed inset-0 z-[9999]
+            flex items-center justify-center
+            bg-black/10 backdrop-blur-md"
+    >
+    <div
+      class="fixed inset-0 z-[9999]
+            flex items-center justify-center
+            bg-black/10 backdrop-blur-md"
+    >
+      <div class="flex flex-col items-center gap-4">
+        <!-- Spinner -->
+        <div class="loader-ring"></div>
+
+        <!-- Text -->
+        <p class="loading-text text-l text-white/80 tracking-wide mt-2">
+          Loading weather data...
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div v-else class="min-h-screen w-full" :style="backgroundStyle">
+
+    <!-- Dark overlay -->
+    <div  class="min-h-screen bg-black/40 text-white flex flex-col items-center">
+
+      <!-- Main layout -->
+      <main class="w-full min-h-fit lg:h-screen flex flex-col md:flex-row items-stretch">
+
+        <!-- LEFT: WeatherCard -->
+        <div class="md:basis-1/4" style="border-right: 1.5px solid #ffffff33;">
+          <WeatherCard
+            :weather="weather"
+            :air="airQuality"
+            :hourly="hourly"
+            :city="city.value"
+            :loading="loading"
+            @search-city="handleCitySearch"
+          />
+        </div>
+
+        <!-- RIGHT: WeatherDetails -->
+        <div class="md:basis-3/4 py-6 md:py-0">
+          <div class="w-full h-full">
+            <WeatherDetails 
+              :weather="weather"
+              :forecast="forecast"
+              :air="airQuality"
+            />
+          </div>
+        </div>
+
+      </main>
+
+      <transition name="fade-slide">
+        <div
+          v-if="toast.show"
+          class="fixed bottom-6 right-6 z-50
+                bg-red-500/90 backdrop-blur
+                border border-red-400/40
+                text-white
+                px-4 py-3
+                rounded-xl
+                min-w-[220px]
+                text-base"
+        >
+          <p class="text-sm font-medium leading-relaxed">
+            {{ toast.message }}
+          </p>
+        </div>
+      </transition>
+
+
+
+
+    </div>
+    
+  </div>
+</template>
+
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+</style>
