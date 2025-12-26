@@ -5,7 +5,6 @@ import WeatherDetails from "./components/WeatherDetails.vue"
 import { useWeather } from "./composables/useWeather"
 
 
-// --- WEATHER STORE ---
 const store = useWeather()
 
 const {
@@ -28,21 +27,34 @@ onMounted(() => {
 })
 
 
+const BASE = import.meta.env.BASE_URL
 
 
-// --- BACKGROUND IMAGE ---
+const loadingBgStyle = computed(() => ({
+  backgroundImage: `url(${BASE}images/default.jpg)`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+}))
+
+
 const backgroundImage = computed(() => {
-  if (!weather.value) return "/images/default.jpg"
+  const file = (() => {
+    if (!weather.value) return "default.jpg"
 
-  const main = weather.value.weather?.[0]?.main?.toLowerCase() || ""
+    const main = weather.value.weather?.[0]?.main?.toLowerCase() || ""
 
-  if (main.includes("cloud")) return "/images/cloudy.jpg"
-  if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "/images/rain.jpg"
-  if (main.includes("snow")) return "/images/snow.jpg"
-  if (main.includes("clear")) return "/images/clear.jpg"
-  if (main.includes("storm") || main.includes("thunder")) return "/images/storm.jpg"
+    if (main.includes("cloud")) return "cloudy.jpg"
+    if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "rain.jpg"
+    if (main.includes("snow")) return "snow.jpg"
+    if (main.includes("clear")) return "clear.jpg"
 
-  return "/images/default.jpg"
+
+    if (main.includes("storm") || main.includes("thunder")) return "storm.jpg"
+
+    return "default.jpg"
+  })()
+
+  return `${BASE}images/${file}`
 })
 
 const backgroundStyle = computed(() => ({
@@ -50,13 +62,12 @@ const backgroundStyle = computed(() => ({
   backgroundSize: "cover",
   backgroundPosition: "center",
 }))
-    
-// --- HANDLE SEARCH EVENT ---
+
+
 const handleCitySearch = (newCity) => {
   city.value = newCity
-  searchWeather()  // fetch weather with updated city
+  searchWeather()
 }
-
 
 
 const toast = ref({ show: false, message: "" })
@@ -64,7 +75,6 @@ const toast = ref({ show: false, message: "" })
 const showToast = (msg) => {
   toast.value.message = msg
   toast.value.show = true
-
   setTimeout(() => {
     toast.value.show = false
   }, 4000)
@@ -73,44 +83,34 @@ const showToast = (msg) => {
 watch(error, (val) => {
   if (val) showToast(val)
 })
-
 </script>
-
 
 <template>
 
+  <!-- LOADING -->
   <div
-      v-if="initialLoad && !isReady"
-      class="loading-BG min-h-screen w-full fixed inset-0 z-[9999]
-            flex items-center justify-center
-            bg-black/10 backdrop-blur-md"
-    >
+    v-if="initialLoad && !isReady"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+  >
     <div
-      class="fixed inset-0 z-[9999]
-            flex items-center justify-center
-            bg-black/10 backdrop-blur-md"
-    >
-      <div class="flex flex-col items-center gap-4">
-        <!-- Spinner -->
-        <div class="loader-ring"></div>
+      class="absolute inset-0 loading-bg-blur"
+      :style="loadingBgStyle"
+    ></div>
 
-        <!-- Text -->
-        <p class="loading-text text-l text-white/80 tracking-wide mt-2">
-          Loading weather data...
-        </p>
-      </div>
+    <div class="absolute inset-0 bg-black/10 backdrop-blur"></div>
+
+    <div class="relative flex flex-col items-center gap-4">
+      <div class="loader-ring"></div>
+      <p class="loading-text text-l text-white/80 tracking-wide mt-2">
+        Loading weather data...
+      </p>
     </div>
   </div>
 
+
   <div v-else class="min-h-screen w-full" :style="backgroundStyle">
-
-    <!-- Dark overlay -->
-    <div  class="min-h-screen bg-black/40 text-white flex flex-col items-center">
-
-      <!-- Main layout -->
+    <div class="min-h-screen bg-black/40 text-white flex flex-col items-center">
       <main class="w-full min-h-fit lg:h-screen flex flex-col md:flex-row items-stretch">
-
-        <!-- LEFT: WeatherCard -->
         <div class="md:basis-1/4" style="border-right: 1.5px solid #ffffff33;">
           <WeatherCard
             :weather="weather"
@@ -122,17 +122,15 @@ watch(error, (val) => {
           />
         </div>
 
-        <!-- RIGHT: WeatherDetails -->
         <div class="md:basis-3/4 py-6 md:py-0">
           <div class="w-full h-full">
-            <WeatherDetails 
+            <WeatherDetails
               :weather="weather"
               :forecast="forecast"
               :air="airQuality"
             />
           </div>
         </div>
-
       </main>
 
       <transition name="fade-slide">
@@ -152,15 +150,9 @@ watch(error, (val) => {
           </p>
         </div>
       </transition>
-
-
-
-
     </div>
-    
   </div>
 </template>
-
 
 <style>
 html, body {
