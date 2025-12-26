@@ -18,6 +18,7 @@ https://zahra-nikbakht.github.io/weather-dashboard/
 - 5-day forecast
 - Air Quality Index (AQI)
 - Hourly temperature chart
+- Dynamic background based on weather conditions
 - Responsive layout
 
 ## Tech Stack
