@@ -1,5 +1,35 @@
-# Vue 3 + Vite
+# Weather Dashboard
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A weather dashboard built with **Vue 3 + Vite + Tailwind CSS**.
+Shows current conditions, forecast, air quality (AQI), and an hourly temperature chart.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Live Demo
+https://zahra-nikbakht.github.io/weather-dashboard/
+
+## Screenshots
+
+### Desktop
+![Desktop screenshot](./assets/screenshots/desktop.jpg)
+
+### Mobile
+![Mobile screenshot](./assets/screenshots/mobile-1.jpg)
+![Mobile screenshot](./assets/screenshots/mobile-2.jpg)
+
+## Features
+- City search
+- Current weather (temp, feels-like, humidity, wind, pressure)
+- 5-day forecast
+- Air Quality Index (AQI)
+- Hourly temperature chart
+- Responsive layout
+
+## Tech Stack
+- Vue 3 (Composition API)
+- Vite
+- Tailwind CSS
+- OpenWeather API
+
+## Run Locally
+```bash
+npm install
+npm run dev
