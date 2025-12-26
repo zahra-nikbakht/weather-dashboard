@@ -31,7 +31,7 @@ const BASE = import.meta.env.BASE_URL
 
 
 const loadingBgStyle = computed(() => ({
-  backgroundImage: `url(${BASE}images/default.jpg)`,
+  backgroundImage: `url(${BASE}images/default.webp)`,
   backgroundSize: "cover",
   backgroundPosition: "center",
 }))
@@ -39,19 +39,19 @@ const loadingBgStyle = computed(() => ({
 
 const backgroundImage = computed(() => {
   const file = (() => {
-    if (!weather.value) return "default.jpg"
+    if (!weather.value) return "default.webp"
 
     const main = weather.value.weather?.[0]?.main?.toLowerCase() || ""
 
-    if (main.includes("cloud")) return "cloudy.jpg"
-    if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "rain.jpg"
-    if (main.includes("snow")) return "snow.jpg"
-    if (main.includes("clear")) return "clear.jpg"
+    if (main.includes("cloud")) return "cloudy.webp"
+    if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "rain.webp"
+    if (main.includes("snow")) return "snow.webp"
+    if (main.includes("clear")) return "clear.webp"
 
 
-    if (main.includes("storm") || main.includes("thunder")) return "storm.jpg"
+    if (main.includes("storm") || main.includes("thunder")) return "storm.webp"
 
-    return "default.jpg"
+    return "default.webp"
   })()
 
   return `${BASE}images/${file}`
