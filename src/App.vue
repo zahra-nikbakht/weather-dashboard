@@ -4,7 +4,6 @@ import WeatherCard from "./components/WeatherCard.vue"
 import WeatherDetails from "./components/WeatherDetails.vue"
 import { useWeather } from "./composables/useWeather"
 
-
 const store = useWeather()
 
 const {
@@ -21,14 +20,26 @@ const {
   loadInitialWeather
 } = store
 
-// --- AUTO-LOAD LOCATION ---
-onMounted(() => {
-  loadInitialWeather()
-})
-
-
 const BASE = import.meta.env.BASE_URL
 
+const preload = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(url)
+    img.onerror = reject
+    img.src = url
+  })
+
+
+onMounted(() => {
+  loadInitialWeather()
+
+  ;[
+    `${BASE}images/default.webp`,
+    `${BASE}images/cloudy.webp`,
+    `${BASE}images/rain.webp`,
+  ].forEach((u) => preload(u).catch(() => {}))
+})
 
 const loadingBgStyle = computed(() => ({
   backgroundImage: `url(${BASE}images/default.webp)`,
@@ -37,7 +48,7 @@ const loadingBgStyle = computed(() => ({
 }))
 
 
-const backgroundImage = computed(() => {
+const targetBgUrl = computed(() => {
   const file = (() => {
     if (!weather.value) return "default.webp"
 
@@ -47,8 +58,6 @@ const backgroundImage = computed(() => {
     if (main.includes("rain") || main.includes("haze") || main.includes("fog")) return "rain.webp"
     if (main.includes("snow")) return "snow.webp"
     if (main.includes("clear")) return "clear.webp"
-
-
     if (main.includes("storm") || main.includes("thunder")) return "storm.webp"
 
     return "default.webp"
@@ -57,8 +66,27 @@ const backgroundImage = computed(() => {
   return `${BASE}images/${file}`
 })
 
+const displayedBgUrl = ref(`${BASE}images/default.webp`)
+
+watch(
+  targetBgUrl,
+  async (url) => {
+
+    if (!url || url === displayedBgUrl.value) return
+
+    try {
+      await preload(url)
+      displayedBgUrl.value = url
+    } catch {
+
+    }
+  },
+  { immediate: true }
+)
+
+
 const backgroundStyle = computed(() => ({
-  backgroundImage: `url(${backgroundImage.value})`,
+  backgroundImage: `url(${displayedBgUrl.value})`,
   backgroundSize: "cover",
   backgroundPosition: "center",
 }))
@@ -158,5 +186,6 @@ watch(error, (val) => {
 html, body {
   margin: 0;
   padding: 0;
+  background: #67caff;
 }
 </style>
