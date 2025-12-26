@@ -9,11 +9,11 @@ https://zahra-nikbakht.github.io/weather-dashboard/
 ## Screenshots
 
 ### Desktop
-![Desktop screenshot](./assets/screenshots/desktop.JPG)
+![Desktop screenshot](./src/assets/screenshots/desktop.JPG)
 
 ### Mobile
-![Mobile screenshot](./assets/screenshots/mobile-1.JPG)
-![Mobile screenshot](./assets/screenshots/mobile-2.JPG)
+![Mobile screenshot](./src/assets/screenshots/mobile-1.JPG)
+![Mobile screenshot](./src/assets/screenshots/mobile-2.JPG)
 
 ## Features
 - City search
